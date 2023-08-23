@@ -50,7 +50,7 @@ client.on('messageCreate', async (message) => {
       content: message.content,
     });
     if (!message.content.toString().toLowerCase().includes("jarvis")) return;
-    
+
     const result = await openai.createChatCompletion({
       model: 'gpt-3.5-turbo',
       messages: conversationLog,
@@ -63,5 +63,4 @@ client.on('messageCreate', async (message) => {
     console.log(error)
   }
 })
-
 client.login(client.token)
