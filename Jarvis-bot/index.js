@@ -49,7 +49,7 @@ client.on('messageCreate', async (message) => {
       role: `user`,
       content: message.content,
     });
-    if (!message.content.toString().toLowerCase().includes("jarvis")) return;
+    if (!((message.mentions.members.first() == client.user.id) || (message.content.toString().toLowerCase().includes("jarvis")))) return;
     if (message.content.toString().toLowerCase().includes("play")) {
       var songName = message.content.toString().split("play")[1]
       const voiceChannel = message.member.voice.channel;
@@ -73,12 +73,13 @@ client.on('messageCreate', async (message) => {
       global.player.deleteQueue(message.guildId);
         return message.reply("Failed to join your voice channel!");
     }
-    queue.addTrack(result.tracks[0]);
+    let song = result.tracks[0]
+    queue.addTrack(song);
             if (!queue.node.playing) await queue.node.play();
 
-            message.reply(`Playing: ${result.tracks[0].title}`);
+            message.reply(`Playing: ${song.title}`);
+            client.user.setActivity(song.title);
     }
-    
 
     const result = await openai.createChatCompletion({
       model: 'gpt-3.5-turbo',

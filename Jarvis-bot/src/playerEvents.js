@@ -26,6 +26,7 @@ player.events.on('playerStart', (queue, track) => {
         .setColor('#13f857')
 
     queue.metadata.channel.send({ embeds: [embed] }).then(message => messages[`${queue.metadata.channel.guild.id}`] = message)
+    client.user.setActivity(track.title);
 })
 
 player.events.on('playerSkip', (queue, track) => {
