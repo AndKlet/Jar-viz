@@ -1,5 +1,5 @@
 const { Client, GatewayIntentBits } = require('discord.js')
-const { Player } = require('discord-player')
+const { Player, QueryType } = require('discord-player')
 const { SpotifyExtractor, SoundCloudExtractor } = require('@discord-player/extractor');
 require('dotenv').config()
 const { Configuration, OpenAIApi } = require('openai')
@@ -50,6 +50,35 @@ client.on('messageCreate', async (message) => {
       content: message.content,
     });
     if (!message.content.toString().toLowerCase().includes("jarvis")) return;
+    if (message.content.toString().toLowerCase().includes("play")) {
+      var songName = message.content.toString().split("play")[1]
+      const voiceChannel = message.member.voice.channel;
+      if (!voiceChannel) return message.reply("Get in a voice chat dipshit")
+      const result = await global.player.search(songName, {
+        requestedBy: message.member,
+        searchEngine: QueryType.AUTO,
+      }).catch(error => console.log(error));
+      if (!result || !result.tracks.length) return message.reply("No results found for your query.");
+      const queue = await global.player.nodes.create(message.guild, {
+        metadata: {
+            channel: message.channel,
+            client: message.guild.me,
+            requestedBy: message.author,
+        },
+        selfDeaf: true
+    });
+    try {
+      if (!queue.connection) await queue.connect(voiceChannel);
+    } catch {
+      global.player.deleteQueue(message.guildId);
+        return message.reply("Failed to join your voice channel!");
+    }
+    queue.addTrack(result.tracks[0]);
+            if (!queue.node.playing) await queue.node.play();
+
+            message.reply(`Playing: ${result.tracks[0].title}`);
+    }
+    
 
     const result = await openai.createChatCompletion({
       model: 'gpt-3.5-turbo',

@@ -1,6 +1,6 @@
 module.exports = {
     app: {
-        playing: 'with my balls',
+        playing: 'with the time-space continuum',
     },
     opt: {
         maxVol: 100,
